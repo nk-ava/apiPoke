@@ -37,7 +37,7 @@ public class ImageServiceImp implements ImageService {
     @Override
     public ByteArrayOutputStream psj(String qq) throws IOException {
         BufferedImage avatar = fetchAvatar(qq);
-        File file = new ClassPathResource("image/psj.png").getFile();
+        InputStream file = new ClassPathResource("image/psj.png").getInputStream();
         BufferedImage psj = ImageIO.read(file);
         BufferedImage img = new BufferedImage(psj.getWidth(), psj.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
@@ -61,16 +61,15 @@ public class ImageServiceImp implements ImageService {
 
     private void initConfig() throws IOException {
         Yaml yml = new Yaml();
-        File file = new ClassPathResource("config.yaml").getFile();
-        InputStream input = new FileInputStream(file);
-        config = yml.load(input);
+        InputStream file = new ClassPathResource("config.yaml").getInputStream();
+        config = yml.load(file);
     }
 
     private ByteArrayOutputStream customDealImage(BufferedImage avatar, String path, String cfg) throws IOException {
-        File file = (new ClassPathResource(path)).getFile();
+        InputStream file = (new ClassPathResource(path)).getInputStream();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         GifDecoder d = new GifDecoder();
-        d.read(file.getPath());
+        d.read(file);
         AnimatedGifEncoder encoder = new AnimatedGifEncoder();
         encoder.start(output);
         encoder.setDelay(d.getDelay(0));
