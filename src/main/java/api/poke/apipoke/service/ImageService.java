@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public interface ImageService {
-    ByteArrayOutputStream kd(String qq) throws IOException;
+    ByteArrayOutputStream kd(String qq) throws Exception;
 
     ByteArrayOutputStream zyy(String qq) throws IOException;
 

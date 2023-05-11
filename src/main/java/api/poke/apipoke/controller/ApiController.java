@@ -28,13 +28,16 @@ public class ApiController {
     @RequestMapping(value = "/poke")
     public void poke(ServletRequest request, ServletResponse response) throws IOException {
         String qq = request.getParameter("qq");
+        String m = request.getParameter("m");
+        String api;
         if (qq == null) {
             response.setContentType("application/json;charset=utf-8");
             response.getWriter().print(JSONObject.toJSONString(R.NullQQ()));
             return;
         }
         long start = new Date().getTime();
-        String api = apis[(int) (Math.random() * apis.length)];
+        if (m == null) api = apis[(int) (Math.random() * apis.length)];
+        else api = m;
         log.info(String.format("收到请求 from: %s，开始任务：[%s]", qq, api));
         try {
             ByteArrayOutputStream img = null;
@@ -49,7 +52,9 @@ public class ApiController {
                     img = imageService.psj(qq);
                     break;
                 default:
-                    throw new Exception("img为空");
+                    response.setContentType("application/json;charset=utf-8");
+                    response.getWriter().print(JSONObject.toJSONString(R.UNAVAILABLEMethod()));
+                    return;
             }
             response.setContentType("image/gif");
             OutputStream out = response.getOutputStream();
