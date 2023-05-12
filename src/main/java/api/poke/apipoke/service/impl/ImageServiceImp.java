@@ -4,10 +4,8 @@ import api.poke.apipoke.callable.ThreadTask;
 import api.poke.apipoke.service.ImageService;
 import cn.hutool.core.img.gif.AnimatedGifEncoder;
 import cn.hutool.core.img.gif.GifDecoder;
-import cn.hutool.json.JSONUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.ls.LSOutput;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.imageio.ImageIO;
@@ -59,6 +57,20 @@ public class ImageServiceImp implements ImageService {
         return output;
     }
 
+    @Override
+    public ByteArrayOutputStream mb(String qq) throws IOException {
+        if (config == null) initConfig();
+        BufferedImage avatar = fetchAvatar(qq);
+        return customDealImage(avatar, "image/mb.gif", "mb");
+    }
+
+    @Override
+    public ByteArrayOutputStream iKun(String qq) throws IOException {
+        if (config == null) initConfig();
+        BufferedImage avatar = fetchAvatar(qq);
+        return customDealImage(avatar, "image/ik.gif", "ik");
+    }
+
     private BufferedImage fetchAvatar(String qq) throws IOException {
         URL url = new URL(String.format("https://q1.qlogo.cn/g?b=qq&nk=%s&s=100", qq));
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -93,9 +105,18 @@ public class ImageServiceImp implements ImageService {
             int avaHeight = arr.get(i).get(2) - arr.get(i).get(0);
             double cenWidth = (arr.get(i).get(1) + arr.get(i).get(3)) / 2.0;
             double cenHeight = (arr.get(i).get(2) + arr.get(i).get(0)) / 2.0;
-            g.translate(cenWidth, cenHeight);
-            g.drawImage(avatar, -avaWidth / 2, -avaHeight / 2, avaWidth, avaHeight, null);
-            g.translate(-cenWidth, -cenHeight);
+            int angle = 0;
+            try {
+                angle = arr.get(i).get(4);
+            } catch (Exception ignored) {
+            }
+            if (avaHeight != 0 && avaWidth != 0) {
+                g.translate(cenWidth, cenHeight);
+                if (angle != 0) g.rotate(angle * Math.PI / 180.0);
+                g.drawImage(avatar, -avaWidth / 2, -avaHeight / 2, avaWidth, avaHeight, null);
+                if (angle != 0) g.rotate(-angle * Math.PI / 180.0);
+                g.translate(-cenWidth, -cenHeight);
+            }
             g.drawImage(frame, 0, 0, width, height, null);
             g.dispose();
             encoder.addFrame(img);

@@ -9,4 +9,8 @@ public interface ImageService {
     ByteArrayOutputStream zyy(String qq) throws IOException;
 
     ByteArrayOutputStream psj(String qq) throws IOException;
+
+    ByteArrayOutputStream mb(String qq) throws IOException;
+
+    ByteArrayOutputStream iKun(String qq) throws IOException;
 }

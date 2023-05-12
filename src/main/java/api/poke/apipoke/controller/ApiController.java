@@ -23,7 +23,7 @@ public class ApiController {
     ImageService imageService;
 
     private final Logger log = LoggerFactory.getLogger(ApiController.class);
-    private final String[] apis = new String[]{"kd", "zyy", "psj"};
+    private final String[] apis = new String[]{"kd", "zyy", "psj", "mb", "ik"};
 
     @RequestMapping(value = "/poke")
     public void poke(ServletRequest request, ServletResponse response) throws IOException {
@@ -51,6 +51,12 @@ public class ApiController {
                 case "psj":
                     img = imageService.psj(qq);
                     break;
+                case "mb":
+                    img = imageService.mb(qq);
+                    break;
+                case "ik":
+                    img = imageService.iKun(qq);
+                    break;
                 default:
                     response.setContentType("application/json;charset=utf-8");
                     response.getWriter().print(JSONObject.toJSONString(R.UNAVAILABLEMethod()));
@@ -71,6 +77,6 @@ public class ApiController {
             response.setContentType("application/json;charset=utf-8");
             response.getWriter().print(JSONObject.toJSONString(R.OTHERError()));
         }
-        log.info(String.format("处理完成：[kd] from(%s) --> 用时%sms", qq, new Date().getTime() - start));
+        log.info(String.format("处理完成：[%s] from(%s) --> 用时%sms", api, qq, new Date().getTime() - start));
     }
 }
