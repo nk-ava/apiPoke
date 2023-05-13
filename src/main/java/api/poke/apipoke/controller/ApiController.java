@@ -79,6 +79,7 @@ public class ApiController {
                 response.getWriter().print(JSONObject.toJSONString(R.AVATARError()));
                 return;
             }
+            System.out.println(err);
             response.setContentType("application/json;charset=utf-8");
             response.getWriter().print(JSONObject.toJSONString(R.OTHERError()));
         }
