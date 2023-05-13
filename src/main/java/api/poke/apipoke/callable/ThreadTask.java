@@ -28,13 +28,17 @@ public class ThreadTask implements Callable<List<BufferedImage>> {
             int height = frame.getHeight();
             BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = img.createGraphics();
-            int avaWidth = arr.get(offset + i).get(1) - arr.get(offset + i).get(3);
-            int avaHeight = arr.get(offset + i).get(2) - arr.get(offset + i).get(0);
-            double cenWidth = (arr.get(offset + i).get(1) + arr.get(offset + i).get(3)) / 2.0;
-            double cenHeight = (arr.get(offset + i).get(2) + arr.get(offset + i).get(0)) / 2.0;
-            g.translate(cenWidth, cenHeight);
-            g.drawImage(avatar, -avaWidth / 2, -avaHeight / 2, avaWidth, avaHeight, null);
-            g.translate(-cenWidth, -cenHeight);
+            if (arr != null) {
+                int avaWidth = arr.get(offset + i).get(1) - arr.get(offset + i).get(3);
+                int avaHeight = arr.get(offset + i).get(2) - arr.get(offset + i).get(0);
+                double cenWidth = (arr.get(offset + i).get(1) + arr.get(offset + i).get(3)) / 2.0;
+                double cenHeight = (arr.get(offset + i).get(2) + arr.get(offset + i).get(0)) / 2.0;
+                g.translate(cenWidth, cenHeight);
+                g.drawImage(avatar, -avaWidth / 2, -avaHeight / 2, avaWidth, avaHeight, null);
+                g.translate(-cenWidth, -cenHeight);
+            } else {
+                g.drawImage(avatar, 0, 0, width, height, null);
+            }
             g.drawImage(frame, 0, 0, width, height, null);
             g.dispose();
             ans.add(img);

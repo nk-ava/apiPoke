@@ -28,20 +28,20 @@ public class ImageServiceImp implements ImageService {
     @Override
     public ByteArrayOutputStream kd(String qq) throws Exception {
         if (config == null) initConfig();
-        BufferedImage avatar = fetchAvatar(qq);
+        BufferedImage avatar = fetchAvatar(qq, 100);
         return threadDealImage(avatar, "image/kd.gif", "kd");
     }
 
     @Override
     public ByteArrayOutputStream zyy(String qq) throws IOException {
         if (config == null) initConfig();
-        BufferedImage avatar = fetchAvatar(qq);
+        BufferedImage avatar = fetchAvatar(qq, 100);
         return customDealImage(avatar, "image/zyy.gif", "zyy");
     }
 
     @Override
     public ByteArrayOutputStream psj(String qq) throws IOException {
-        BufferedImage avatar = fetchAvatar(qq);
+        BufferedImage avatar = fetchAvatar(qq, 100);
         InputStream file = new ClassPathResource("image/psj.png").getInputStream();
         BufferedImage psj = ImageIO.read(file);
         BufferedImage img = new BufferedImage(psj.getWidth(), psj.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -60,19 +60,43 @@ public class ImageServiceImp implements ImageService {
     @Override
     public ByteArrayOutputStream mb(String qq) throws IOException {
         if (config == null) initConfig();
-        BufferedImage avatar = fetchAvatar(qq);
+        BufferedImage avatar = fetchAvatar(qq, 100);
         return customDealImage(avatar, "image/mb.gif", "mb");
     }
 
     @Override
     public ByteArrayOutputStream iKun(String qq) throws IOException {
         if (config == null) initConfig();
-        BufferedImage avatar = fetchAvatar(qq);
+        BufferedImage avatar = fetchAvatar(qq, 100);
         return customDealImage(avatar, "image/ik.gif", "ik");
     }
 
-    private BufferedImage fetchAvatar(String qq) throws IOException {
-        URL url = new URL(String.format("https://q1.qlogo.cn/g?b=qq&nk=%s&s=100", qq));
+    @Override
+    public ByteArrayOutputStream diu(String qq) throws IOException {
+        BufferedImage avatar = fetchAvatar(qq, 640);
+        InputStream file = new ClassPathResource("image/diu.png").getInputStream();
+        BufferedImage psj = ImageIO.read(file);
+        BufferedImage img = new BufferedImage(psj.getWidth(), psj.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = img.createGraphics();
+        g.translate(80, 240);
+        g.rotate(20 * Math.PI / 180);
+        g.drawImage(avatar, -70, -70, 150, 150, null);
+        g.rotate(-20 * Math.PI / 180);
+        g.drawImage(psj, -80, -240, null);
+        g.dispose();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ImageIO.write(img, "png", output);
+        return output;
+    }
+
+    @Override
+    public ByteArrayOutputStream gs(String qq) throws Exception {
+        BufferedImage avatar = fetchAvatar(qq, 640);
+        return threadDealImage(avatar, "image/gs.gif", null);
+    }
+
+    private BufferedImage fetchAvatar(String qq, int quality) throws IOException {
+        URL url = new URL(String.format("https://q1.qlogo.cn/g?b=qq&nk=%s&s=%d", qq, quality));
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         return ImageIO.read(con.getInputStream());
@@ -94,28 +118,35 @@ public class ImageServiceImp implements ImageService {
         encoder.setDelay(d.getDelay(0));
         encoder.setRepeat(0);
         int cnt = d.getFrameCount();
-        ArrayList<ArrayList<Integer>> arr = (ArrayList<ArrayList<Integer>>) config.get(cfg);
+        ArrayList<ArrayList<Integer>> arr = null;
+        if (cfg != null) {
+            arr = (ArrayList<ArrayList<Integer>>) config.get(cfg);
+        }
         for (int i = 0; i < cnt; i++) {
             BufferedImage frame = d.getFrame(i);
             int width = frame.getWidth();
             int height = frame.getHeight();
             BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = img.createGraphics();
-            int avaWidth = arr.get(i).get(1) - arr.get(i).get(3);
-            int avaHeight = arr.get(i).get(2) - arr.get(i).get(0);
-            double cenWidth = (arr.get(i).get(1) + arr.get(i).get(3)) / 2.0;
-            double cenHeight = (arr.get(i).get(2) + arr.get(i).get(0)) / 2.0;
-            int angle = 0;
-            try {
-                angle = arr.get(i).get(4);
-            } catch (Exception ignored) {
-            }
-            if (avaHeight != 0 && avaWidth != 0) {
-                g.translate(cenWidth, cenHeight);
-                if (angle != 0) g.rotate(angle * Math.PI / 180.0);
-                g.drawImage(avatar, -avaWidth / 2, -avaHeight / 2, avaWidth, avaHeight, null);
-                if (angle != 0) g.rotate(-angle * Math.PI / 180.0);
-                g.translate(-cenWidth, -cenHeight);
+            if (arr != null) {
+                int avaWidth = arr.get(i).get(1) - arr.get(i).get(3);
+                int avaHeight = arr.get(i).get(2) - arr.get(i).get(0);
+                double cenWidth = (arr.get(i).get(1) + arr.get(i).get(3)) / 2.0;
+                double cenHeight = (arr.get(i).get(2) + arr.get(i).get(0)) / 2.0;
+                int angle = 0;
+                try {
+                    angle = arr.get(i).get(4);
+                } catch (Exception ignored) {
+                }
+                if (avaHeight != 0 && avaWidth != 0) {
+                    g.translate(cenWidth, cenHeight);
+                    if (angle != 0) g.rotate(angle * Math.PI / 180.0);
+                    g.drawImage(avatar, -avaWidth / 2, -avaHeight / 2, avaWidth, avaHeight, null);
+                    if (angle != 0) g.rotate(-angle * Math.PI / 180.0);
+                    g.translate(-cenWidth, -cenHeight);
+                }
+            } else {
+                g.drawImage(avatar, 0, 0, width, height, null);
             }
             g.drawImage(frame, 0, 0, width, height, null);
             g.dispose();
@@ -125,7 +156,7 @@ public class ImageServiceImp implements ImageService {
         return output;
     }
 
-    private ByteArrayOutputStream threadDealImage(BufferedImage avatar, String path, String cfg) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+    private ByteArrayOutputStream threadDealImage(BufferedImage avatar, String path, String cfg) throws Exception {
         InputStream file = (new ClassPathResource(path)).getInputStream();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         GifDecoder d = new GifDecoder();
@@ -134,16 +165,20 @@ public class ImageServiceImp implements ImageService {
         encoder.start(output);
         encoder.setRepeat(0);
         encoder.setDelay(d.getDelay(0));
-        ArrayList<ArrayList<Integer>> arr = (ArrayList<ArrayList<Integer>>) config.get(cfg);
+        ArrayList<ArrayList<Integer>> arr = null;
+        if (cfg != null) {
+            arr = (ArrayList<ArrayList<Integer>>) config.get(cfg);
+        }
         int frameCnt = d.getFrameCount();
-        int threadCnt = frameCnt / 10;
+        int cnt = 20;
+        int threadCnt = frameCnt / cnt;
         List<Future<List<BufferedImage>>> res = new ArrayList<>();
         for (int i = 0; i < threadCnt; i++) {
             List<BufferedImage> tasks = new ArrayList<>();
-            for (int j = 0; j < 10 && i * 10 + j < frameCnt; j++) {
-                tasks.add(d.getFrame(i * 10 + j));
+            for (int j = 0; j < cnt && i * cnt + j < frameCnt; j++) {
+                tasks.add(d.getFrame(i * cnt + j));
             }
-            ThreadTask task = new ThreadTask(tasks, arr, avatar, i * 10);
+            ThreadTask task = new ThreadTask(tasks, arr, avatar, i * cnt);
             res.add(pool.submit(task));
         }
         for (Future<List<BufferedImage>> re : res) {

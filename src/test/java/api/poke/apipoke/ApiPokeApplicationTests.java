@@ -11,10 +11,6 @@ class ApiPokeApplicationTests {
 
     @Test
     void contextLoads() {
-        List<Integer> list = new ArrayList<>();
-        list.add(123);
-        list.add(354);
-        System.out.println(list.get(7));
     }
 
 }

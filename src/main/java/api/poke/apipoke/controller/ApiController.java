@@ -23,7 +23,7 @@ public class ApiController {
     ImageService imageService;
 
     private final Logger log = LoggerFactory.getLogger(ApiController.class);
-    private final String[] apis = new String[]{"kd", "zyy", "psj", "mb", "ik"};
+    private final String[] apis = new String[]{"kd", "zyy", "psj", "mb", "ik", "diu", "gs"};
 
     @RequestMapping(value = "/poke")
     public void poke(ServletRequest request, ServletResponse response) throws IOException {
@@ -57,6 +57,12 @@ public class ApiController {
                 case "ik":
                     img = imageService.iKun(qq);
                     break;
+                case "diu":
+                    img = imageService.diu(qq);
+                    break;
+                case "gs":
+                    img = imageService.gs(qq);
+                    break;
                 default:
                     response.setContentType("application/json;charset=utf-8");
                     response.getWriter().print(JSONObject.toJSONString(R.UNAVAILABLEMethod()));
@@ -68,7 +74,6 @@ public class ApiController {
             out.flush();
             out.close();
         } catch (Exception err) {
-            System.out.println(err);
             if (err instanceof MalformedURLException || err instanceof ProtocolException) {
                 response.setContentType("application/json;charset=utf-8");
                 response.getWriter().print(JSONObject.toJSONString(R.AVATARError()));
