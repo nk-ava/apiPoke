@@ -17,4 +17,18 @@ public interface ImageService {
     ByteArrayOutputStream diu(String qq) throws IOException;
 
     ByteArrayOutputStream gs(String qq) throws Exception;
+
+    ByteArrayOutputStream nz(String qq) throws IOException;
+
+    ByteArrayOutputStream ff(String qq) throws IOException;
+
+    ByteArrayOutputStream tui(String qq) throws IOException;
+
+    ByteArrayOutputStream jb(String qq) throws IOException;
+
+    ByteArrayOutputStream lh(String qq) throws IOException;
+
+    ByteArrayOutputStream tun(String qq) throws Exception;
+
+    ByteArrayOutputStream jh(String qq) throws IOException;
 }

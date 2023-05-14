@@ -23,7 +23,7 @@ public class ApiController {
     ImageService imageService;
 
     private final Logger log = LoggerFactory.getLogger(ApiController.class);
-    private final String[] apis = new String[]{"kd", "zyy", "psj", "mb", "ik", "diu", "gs"};
+    private final String[] apis = new String[]{"jh", "kd", "zyy", "psj", "mb", "ik", "diu", "gs", "nz", "ff", "tui", "jb", "lh", "tun"};
 
     @RequestMapping(value = "/poke")
     public void poke(ServletRequest request, ServletResponse response) throws IOException {
@@ -62,6 +62,27 @@ public class ApiController {
                     break;
                 case "gs":
                     img = imageService.gs(qq);
+                    break;
+                case "nz":
+                    img = imageService.nz(qq);
+                    break;
+                case "ff":
+                    img = imageService.ff(qq);
+                    break;
+                case "tui":
+                    img = imageService.tui(qq);
+                    break;
+                case "jb":
+                    img = imageService.jb(qq);
+                    break;
+                case "lh":
+                    img = imageService.lh(qq);
+                    break;
+                case "tun":
+                    img = imageService.tun(qq);
+                    break;
+                case "jh":
+                    img = imageService.jh(qq);
                     break;
                 default:
                     response.setContentType("application/json;charset=utf-8");
